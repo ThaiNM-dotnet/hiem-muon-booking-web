@@ -1,5 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   user?: {
@@ -12,8 +14,20 @@ interface HeaderProps {
 const Header = ({ user, onLogout }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    toast({
+      title: "Tạm biệt!",
+      description: "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hẹn gặp lại!",
+    });
+    navigate('/');
+  };
 
   return (
     <header className="bg-card border-b border-border">
@@ -21,9 +35,11 @@ const Header = ({ user, onLogout }: HeaderProps) => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">♡</span>
-              </div>
+              <img 
+                src="/lovable-uploads/9dcd7ec6-25c5-4e02-98e1-0b9eee7bf214.png" 
+                alt="FertilityCare" 
+                className="h-8 w-auto"
+              />
               <span className="text-xl font-bold text-foreground">FertilityCare</span>
             </div>
           </div>
@@ -76,7 +92,7 @@ const Header = ({ user, onLogout }: HeaderProps) => {
                   Dashboard
                 </Button>
                 <span className="text-sm text-muted-foreground">Xin chào, {user.name}</span>
-                <Button variant="outline" onClick={onLogout} size="sm">
+                <Button variant="outline" onClick={handleLogout} size="sm">
                   Đăng xuất
                 </Button>
               </div>

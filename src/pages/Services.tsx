@@ -1,3 +1,5 @@
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -5,13 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 const Services = () => {
   const navigate = useNavigate();
+  const [activeFilter, setActiveFilter] = useState('all');
 
   const serviceCategories = [
-    { id: 'all', label: 'Tất cả (6)', active: true },
-    { id: 'basic', label: 'Cơ bản (1)', active: false },
-    { id: 'advanced', label: 'Nâng cao (2)', active: false },
-    { id: 'premium', label: 'Cao cấp (1)', active: false },
-    { id: 'support', label: 'Hỗ trợ (2)', active: false }
+    { id: 'all', label: 'Tất cả (6)' },
+    { id: 'basic', label: 'Cơ bản (1)' },
+    { id: 'advanced', label: 'Nâng cao (2)' },
+    { id: 'premium', label: 'Cao cấp (1)' },
+    { id: 'support', label: 'Hỗ trợ (2)' }
   ];
 
   const services = [
@@ -127,6 +130,10 @@ const Services = () => {
     }
   ];
 
+  const filteredServices = activeFilter === 'all' 
+    ? services 
+    : services.filter(service => service.category === activeFilter);
+
   return (
     <div className="min-h-screen bg-secondary/10">
       <div className="container mx-auto px-4 py-8">
@@ -142,8 +149,9 @@ const Services = () => {
           {serviceCategories.map((category) => (
             <Button
               key={category.id}
-              variant={category.active ? "default" : "outline"}
-              className={category.active ? "bg-primary hover:bg-primary/90" : ""}
+              variant={activeFilter === category.id ? "default" : "outline"}
+              className={activeFilter === category.id ? "bg-primary hover:bg-primary/90" : ""}
+              onClick={() => setActiveFilter(category.id)}
             >
               {category.label}
             </Button>
@@ -152,16 +160,13 @@ const Services = () => {
 
         {/* Services Grid */}
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          {services.map((service) => (
+          {filteredServices.map((service) => (
             <Card key={service.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
                   <Badge className={service.badgeColor}>
                     {service.badge}
                   </Badge>
-                  {service.category === 'advanced' && (
-                    <Badge variant="secondary">Nâng cao</Badge>
-                  )}
                 </div>
                 <CardTitle className="text-xl">{service.title}</CardTitle>
                 <CardDescription>{service.description}</CardDescription>
@@ -211,12 +216,18 @@ const Services = () => {
           ))}
         </div>
 
+        {filteredServices.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Không có dịch vụ nào trong danh mục này.</p>
+          </div>
+        )}
+
         {/* Call to Action */}
         <div className="text-center">
           <Card className="bg-primary text-primary-foreground">
             <CardHeader>
               <CardTitle className="text-2xl">
-                Cần tư vấn thêm về dịch vụ phù hợp?
+                Cần tư vấn thêm về dịch vụ?
               </CardTitle>
               <CardDescription className="text-primary-foreground/80">
                 Đội ngũ chuyên gia của chúng tôi sẽ tư vấn miễn phí để giúp bạn chọn được phương pháp điều trị phù hợp nhất.
@@ -229,8 +240,13 @@ const Services = () => {
                 onClick={() => navigate('/booking')}
                 className="text-lg px-8 py-3"
               >
-                Đăng ký tư vấn miễn phí
+                Đặt lịch tư vấn miễn phí
               </Button>
+              <div className="mt-4">
+                <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-primary">
+                  Gọi ngay: 1900-1234
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

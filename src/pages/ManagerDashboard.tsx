@@ -1,31 +1,37 @@
+
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, UserIcon, FileIcon, TrendingUpIcon } from "lucide-react";
+import StaffManagement from "@/components/StaffManagement";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ManagerDashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+
   const stats = [
     {
-      title: "Lịch khám hôm nay",
-      value: "8",
-      icon: <CalendarIcon className="w-6 h-6" />,
+      title: "Tổng số bác sĩ",
+      value: "12",
+      icon: <UserIcon className="w-6 h-6" />,
       color: "text-blue-500"
     },
     {
-      title: "Tổng số dịch vụ",
-      value: "6",
-      icon: <FileIcon className="w-6 h-6" />,
+      title: "Tổng số khách hàng",
+      value: "156",
+      icon: <UserIcon className="w-6 h-6" />,
       color: "text-green-500"
     },
     {
-      title: "Lịch chờ xử lý",
-      value: "12",
+      title: "Khách hàng mới tháng này",
+      value: "23",
       icon: <CalendarIcon className="w-6 h-6" />,
       color: "text-orange-500"
     },
     {
-      title: "Hoàn thành hôm nay",
-      value: "5",
+      title: "Lịch hẹn hoạt động",
+      value: "45",
       icon: <TrendingUpIcon className="w-6 h-6" />,
       color: "text-purple-500"
     }
@@ -56,33 +62,6 @@ const ManagerDashboard = () => {
     }
   ];
 
-  const staffList = [
-    {
-      id: 1,
-      name: "BS. Trần Văn Nam",
-      role: "Bác sĩ chính",
-      department: "Sản Phụ khoa",
-      appointmentsToday: 4,
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "BS. Nguyễn Thị Mai",
-      role: "Bác sĩ",
-      department: "Hiếm muộn",
-      appointmentsToday: 3,
-      status: "active"
-    },
-    {
-      id: 3,
-      name: "Y tá Phạm Thị Lan",
-      role: "Y tá",
-      department: "Hỗ trợ",
-      appointmentsToday: 6,
-      status: "active"
-    }
-  ];
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -100,9 +79,9 @@ const ManagerDashboard = () => {
     <div className="min-h-screen bg-secondary/10">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Bảng điều khiển Manager</h1>
+          <h1 className="text-3xl font-bold mb-2">Bảng điều khiển quản lý</h1>
           <p className="text-muted-foreground">
-            Quản lý tổng thể hệ thống và theo dõi hiệu suất
+            Quản lý tổng thể khách hàng và lịch làm việc của hệ thống
           </p>
         </div>
 
@@ -125,144 +104,110 @@ const ManagerDashboard = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Staff Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <UserIcon className="w-5 h-5" />
-                <span>Quản lý Staff</span>
-              </CardTitle>
-              <CardDescription>
-                Quản lý nhân viên và phân công công việc
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {staffList.map((staff) => (
-                  <div key={staff.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium">{staff.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {staff.role} • {staff.department}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Lịch hôm nay: {staff.appointmentsToday}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge className="bg-green-100 text-green-800">
-                        Hoạt động
-                      </Badge>
-                      <Button variant="outline" size="sm">
-                        Quản lý
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                <Button className="w-full bg-primary hover:bg-primary/90">
-                  Thêm nhân viên mới
+        {/* Tab Navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Tổng quan</TabsTrigger>
+            <TabsTrigger value="staff">Quản lý Bác sĩ</TabsTrigger> 
+            <TabsTrigger value="customers">Quản lý Khách hàng</TabsTrigger>
+            <TabsTrigger value="appointments">Lịch làm việc</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* System Management */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Quản lý hệ thống</CardTitle>
+              </CardHeader>
+              <CardContent className="grid md:grid-cols-2 gap-3">
+                <Button variant="outline" className="justify-start">
+                  📊 Báo cáo doanh thu
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <Button variant="outline" className="justify-start">
+                  🏥 Quản lý dịch vụ
+                </Button>
+                <Button variant="outline" className="justify-start">
+                  ⚙️ Cài đặt hệ thống
+                </Button>
+                <Button variant="outline" className="justify-start">
+                  📈 Thống kê và báo cáo
+                </Button>
+              </CardContent>
+            </Card>
 
-          {/* System Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quản lý hệ thống</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start">
-                📊 Báo cáo doanh thu
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                👥 Quản lý khách hàng
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                🏥 Quản lý dịch vụ
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                📅 Quản lý lịch hẹn
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                ⚙️ Cài đặt hệ thống
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                📈 Thống kê và báo cáo
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Appointments */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Lịch hẹn gần đây</CardTitle>
-            <CardDescription>
-              Theo dõi và quản lý các lịch hẹn trong hệ thống
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentAppointments.map((appointment) => (
-                <div key={appointment.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="font-medium">{appointment.customer}</p>
-                      <p className="text-sm text-muted-foreground">{appointment.phone}</p>
+            {/* Recent Appointments */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Lịch hẹn gần đây</CardTitle>
+                <CardDescription>
+                  Theo dõi và quản lý các lịch hẹn trong hệ thống
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentAppointments.map((appointment) => (
+                    <div key={appointment.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <p className="font-medium">{appointment.customer}</p>
+                          <p className="text-sm text-muted-foreground">{appointment.phone}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Bác sĩ</p>
+                          <p className="font-medium">{appointment.doctor}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Dịch vụ</p>
+                          <p className="font-medium">{appointment.service}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Thời gian</p>
+                          <p className="font-medium">{appointment.date} {appointment.time}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge className={getStatusColor(appointment.status)}>
+                          {appointment.statusText}
+                        </Badge>
+                        <Button variant="outline" size="sm">
+                          Chi tiết
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Bác sĩ</p>
-                      <p className="font-medium">{appointment.doctor}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Dịch vụ</p>
-                      <p className="font-medium">{appointment.service}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Thời gian</p>
-                      <p className="font-medium">{appointment.date} {appointment.time}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge className={getStatusColor(appointment.status)}>
-                      {appointment.statusText}
-                    </Badge>
-                    <Button variant="outline" size="sm">
-                      Chi tiết
-                    </Button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="mt-4 text-center">
-              <Button variant="outline">
-                Xem tất cả lịch hẹn
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Quick Actions */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Thao tác nhanh</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button className="bg-primary hover:bg-primary/90">
-                Tạo lịch hẹn mới
-              </Button>
-              <Button variant="outline">
-                Xuất báo cáo
-              </Button>
-              <Button variant="outline">
-                Backup dữ liệu
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          <TabsContent value="staff">
+            <StaffManagement />
+          </TabsContent>
+
+          <TabsContent value="customers">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quản lý Khách hàng</CardTitle>
+                <CardDescription>Quản lý thông tin và lịch sử khách hàng</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Chức năng quản lý khách hàng đang được phát triển...</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="appointments">
+            <Card>
+              <CardHeader>
+                <CardTitle>Lịch làm việc</CardTitle>
+                <CardDescription>Quản lý lịch hẹn và phân công công việc</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Chức năng quản lý lịch làm việc đang được phát triển...</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

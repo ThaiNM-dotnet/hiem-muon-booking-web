@@ -1,10 +1,16 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, UserIcon, FileIcon, TrendingUpIcon } from "lucide-react";
+import ServiceManagement from "@/components/ServiceManagement";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
 
 const StaffDashboard = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('appointments');
 
   const stats = [
@@ -34,12 +40,14 @@ const StaffDashboard = () => {
     }
   ];
 
-  const todayAppointments = [
+  const [appointments, setAppointments] = useState([
     {
       id: 1,
       customer: "Nguyễn Thị Lan",
       phone: "0901234567",
+      doctor: "BS. Trần Văn Nam",
       service: "IUI - Thu tinh trong tử cung",
+      date: "2024-06-15",
       time: "09:00",
       status: "confirmed",
       statusText: "Đã đặt lịch"
@@ -48,42 +56,14 @@ const StaffDashboard = () => {
       id: 2,
       customer: "Lê Thị Hoa",
       phone: "0907654321",
+      doctor: "BS. Nguyễn Thị Mai",
       service: "IVF - Thu tinh ống nghiệm",
+      date: "2024-06-16",
       time: "14:30",
       status: "completed",
       statusText: "Hoàn thành"
     }
-  ];
-
-  const services = [
-    {
-      id: 1,
-      name: "IUI - Thu tinh trong tử cung",
-      category: "Cơ bản",
-      description: "Phương pháp hỗ trợ sinh sản đơn giản, phù hợp với các trường hợp vô sinh nhẹ.",
-      price: "15.000.000 - 25.000.000 VNĐ",
-      duration: "2-3 tuần",
-      successRate: "15-20%"
-    },
-    {
-      id: 2,
-      name: "IVF - Thu tinh ống nghiệm cơ bản",
-      category: "Nâng cao",
-      description: "Thu tinh ngoài cơ thể với công nghệ tiên tiến, phù hợp với nhiều trường hợp vô sinh.",
-      price: "80.000.000 - 120.000.000 VNĐ",
-      duration: "4-6 tuần",
-      successRate: "40-50%"
-    },
-    {
-      id: 3,
-      name: "ICSI - Tiêm tinh trùng vào bào tương trứng",
-      category: "Nâng cao",
-      description: "Công nghệ IVF kết hợp ICSI, phù hợp với vô sinh nam và trường hợp khó.",
-      price: "100.000.000 - 150.000.000 VNĐ",
-      duration: "4-6 tuần",
-      successRate: "45-55%"
-    }
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -98,17 +78,28 @@ const StaffDashboard = () => {
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'Cơ bản':
-        return 'bg-blue-100 text-blue-800';
-      case 'Nâng cao':
-        return 'bg-purple-100 text-purple-800';
-      case 'Cao cấp':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const updateAppointmentStatus = (id: number, newStatus: string, newStatusText: string) => {
+    setAppointments(appointments.map(apt => 
+      apt.id === id 
+        ? { ...apt, status: newStatus, statusText: newStatusText }
+        : apt
+    ));
+    
+    const appointment = appointments.find(apt => apt.id === id);
+    toast({
+      title: "Cập nhật trạng thái",
+      description: `Lịch hẹn của ${appointment?.customer} đã được cập nhật`,
+    });
+  };
+
+  const deleteAppointment = (id: number) => {
+    const appointment = appointments.find(apt => apt.id === id);
+    setAppointments(appointments.filter(apt => apt.id !== id));
+    toast({
+      title: "Xóa lịch hẹn",
+      description: `Lịch hẹn của ${appointment?.customer} đã được xóa`,
+      variant: "destructive"
+    });
   };
 
   return (
@@ -141,28 +132,13 @@ const StaffDashboard = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="mb-6">
-          <div className="flex space-x-1 bg-card p-1 rounded-lg border">
-            <Button
-              variant={activeTab === 'appointments' ? 'default' : 'ghost'}
-              onClick={() => setActiveTab('appointments')}
-              className={activeTab === 'appointments' ? 'bg-primary text-primary-foreground' : ''}
-            >
-              Quản lý Lịch khám
-            </Button>
-            <Button
-              variant={activeTab === 'services' ? 'default' : 'ghost'}
-              onClick={() => setActiveTab('services')}
-              className={activeTab === 'services' ? 'bg-primary text-primary-foreground' : ''}
-            >
-              Quản lý Dịch vụ
-            </Button>
-          </div>
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="appointments">Quản lý Lịch khám</TabsTrigger>
+            <TabsTrigger value="services">Quản lý Dịch vụ</TabsTrigger>
+          </TabsList>
 
-        {/* Appointments Management */}
-        {activeTab === 'appointments' && (
-          <div className="space-y-6">
+          <TabsContent value="appointments">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -182,116 +158,72 @@ const StaffDashboard = () => {
                     Tổng quan về tất cả lịch khám trong hệ thống
                   </div>
                   
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-2">Khách hàng</th>
-                          <th className="text-left py-2">Bác sĩ</th>
-                          <th className="text-left py-2">Dịch vụ</th>
-                          <th className="text-left py-2">Ngày giờ</th>
-                          <th className="text-left py-2">Trạng thái</th>
-                          <th className="text-left py-2">Thao tác</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {todayAppointments.map((appointment) => (
-                          <tr key={appointment.id} className="border-b">
-                            <td className="py-3">
-                              <div>
-                                <p className="font-medium">{appointment.customer}</p>
-                                <p className="text-sm text-muted-foreground">{appointment.phone}</p>
-                              </div>
-                            </td>
-                            <td className="py-3">BS. Trần Văn Nam</td>
-                            <td className="py-3">{appointment.service}</td>
-                            <td className="py-3">
-                              📅 2024-06-15 ⏰ {appointment.time}
-                            </td>
-                            <td className="py-3">
-                              <Badge className={getStatusColor(appointment.status)}>
-                                {appointment.statusText}
-                              </Badge>
-                            </td>
-                            <td className="py-3">
-                              <div className="flex space-x-2">
-                                <Button variant="outline" size="sm">
-                                  ✏️
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  🗑️
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Khách hàng</TableHead>
+                        <TableHead>Bác sĩ</TableHead>
+                        <TableHead>Dịch vụ</TableHead>
+                        <TableHead>Ngày giờ</TableHead>
+                        <TableHead>Trạng thái</TableHead>
+                        <TableHead>Thao tác</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {appointments.map((appointment) => (
+                        <TableRow key={appointment.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{appointment.customer}</p>
+                              <p className="text-sm text-muted-foreground">{appointment.phone}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>{appointment.doctor}</TableCell>
+                          <TableCell>{appointment.service}</TableCell>
+                          <TableCell>
+                            📅 {appointment.date} ⏰ {appointment.time}
+                          </TableCell>
+                          <TableCell>
+                            <Badge 
+                              className={`${getStatusColor(appointment.status)} cursor-pointer`}
+                              onClick={() => {
+                                if (appointment.status === 'confirmed') {
+                                  updateAppointmentStatus(appointment.id, 'completed', 'Hoàn thành');
+                                } else if (appointment.status === 'completed') {
+                                  updateAppointmentStatus(appointment.id, 'confirmed', 'Đã đặt lịch');
+                                }
+                              }}
+                            >
+                              {appointment.statusText}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button variant="outline" size="sm">
+                                ✏️
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => deleteAppointment(appointment.id)}
+                              >
+                                🗑️
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
+          </TabsContent>
 
-        {/* Services Management */}
-        {activeTab === 'services' && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Quản lý Dịch vụ</span>
-                  <Button className="bg-primary hover:bg-primary/90">
-                    Thêm dịch vụ mới
-                  </Button>
-                </CardTitle>
-                <CardDescription>
-                  Quản lý các dịch vụ hỗ trợ sinh sản
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid lg:grid-cols-1 gap-6">
-                  {services.map((service) => (
-                    <Card key={service.id} className="border-l-4 border-l-primary">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <h3 className="text-lg font-semibold">{service.name}</h3>
-                              <Badge className={getCategoryColor(service.category)}>
-                                {service.category}
-                              </Badge>
-                            </div>
-                            <p className="text-muted-foreground mb-4">{service.description}</p>
-                            <div className="grid md:grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <span className="font-medium">Giá:</span> {service.price}
-                              </div>
-                              <div>
-                                <span className="font-medium">Thời gian:</span> {service.duration}
-                              </div>
-                              <div>
-                                <span className="font-medium">Tỷ lệ thành công:</span> {service.successRate}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">
-                              ✏️
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              🗑️
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+          <TabsContent value="services">
+            <ServiceManagement />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
