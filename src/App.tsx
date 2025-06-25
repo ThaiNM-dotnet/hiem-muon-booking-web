@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -10,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Booking from "./pages/Booking";
 import Services from "./pages/Services";
+import CustomerPage from "./pages/CustomerPage";
 import UserDashboard from "./pages/UserDashboard";
 import StaffDashboard from "./pages/StaffDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
@@ -46,6 +48,7 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/booking" element={<Booking />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/customer" element={<CustomerPage />} />
             <Route path="/dashboard/user" element={<UserDashboard />} />
             <Route path="/dashboard/staff" element={<StaffDashboard />} />
             <Route path="/dashboard/manager" element={<ManagerDashboard />} />

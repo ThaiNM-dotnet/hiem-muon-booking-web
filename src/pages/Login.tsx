@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,8 +26,10 @@ const Login = ({ onLogin }: LoginProps) => {
       onLogin({ name: 'Staff', role: 'staff' });
       navigate('/dashboard/staff');
     } else {
-      onLogin({ name: 'Người dùng', role: 'user' });
-      navigate('/dashboard/user');
+      // For regular users, extract name from email or use default
+      const userName = email.includes('@') ? email.split('@')[0] : 'Khách hàng';
+      onLogin({ name: userName, role: 'user' });
+      navigate('/customer'); // Navigate to customer page instead of user dashboard
     }
   };
 
@@ -74,7 +77,8 @@ const Login = ({ onLogin }: LoginProps) => {
               <div className="text-muted-foreground">
                 <strong>Tài khoản mặc định:</strong><br />
                 Manager: manager@fertilitycare.com / @1<br />
-                Staff: staff@fertilitycare.com / @1
+                Staff: staff@fertilitycare.com / @1<br />
+                User: bất kỳ email nào khác / @1
               </div>
             </div>
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
