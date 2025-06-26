@@ -34,15 +34,18 @@ const Login = ({ onLogin }: LoginProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary/10">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">♡</span>
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center justify-center space-x-2 mb-4 mx-auto hover:opacity-80 transition-opacity"
+          >
+            <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-lg">♡</span>
             </div>
             <span className="text-xl font-bold">FertilityCare</span>
-          </div>
+          </button>
           <CardTitle className="text-2xl">Đăng nhập</CardTitle>
           <CardDescription>
             Nhập email và mật khẩu để truy cập hệ thống
@@ -72,16 +75,23 @@ const Login = ({ onLogin }: LoginProps) => {
                 required
               />
             </div>
-            <div className="text-sm text-primary">
-              <div className="mb-2">Quên mật khẩu?</div>
-              <div className="text-muted-foreground">
-                <strong>Tài khoản mặc định:</strong><br />
-                Manager: manager@fertilitycare.com / @1<br />
-                Staff: staff@fertilitycare.com / @1<br />
-                User: bất kỳ email nào khác / @1
+            <div className="text-sm">
+              <button
+                type="button"
+                className="text-pink-500 hover:underline"
+              >
+                Quên mật khẩu?
+              </button>
+              <div className="mt-4 p-3 bg-pink-50 rounded-lg">
+                <div className="text-pink-600 font-medium mb-2">Tài khoản mặc định:</div>
+                <div className="text-sm text-pink-600">
+                  Manager: manager@fertilitycare.com / @1<br />
+                  Staff: staff@fertilitycare.com / @1<br />
+                  User: bất kỳ email nào khác / @1
+                </div>
               </div>
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+            <Button type="submit" className="w-full bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600">
               Đăng nhập
             </Button>
           </form>
@@ -89,7 +99,7 @@ const Login = ({ onLogin }: LoginProps) => {
             <span className="text-muted-foreground">Chưa có tài khoản? </span>
             <button
               onClick={() => navigate('/register')}
-              className="text-primary hover:underline"
+              className="text-pink-500 hover:underline"
             >
               Đăng ký ngay
             </button>

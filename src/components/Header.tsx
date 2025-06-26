@@ -34,14 +34,15 @@ const Header = ({ user, onLogout }: HeaderProps) => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-2">
-              <img 
-                src="/lovable-uploads/9dcd7ec6-25c5-4e02-98e1-0b9eee7bf214.png" 
-                alt="FertilityCare" 
-                className="h-8 w-auto"
-              />
+            <button 
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
+              <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">♡</span>
+              </div>
               <span className="text-xl font-bold text-foreground">FertilityCare</span>
-            </div>
+            </button>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">

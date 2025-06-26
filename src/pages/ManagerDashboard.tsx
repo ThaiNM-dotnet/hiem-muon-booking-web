@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, UserIcon, FileIcon, TrendingUpIcon } from "lucide-react";
 import StaffManagement from "@/components/StaffManagement";
+import CustomerManagement from "@/components/CustomerManagement";
+import ScheduleManagement from "@/components/ScheduleManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ManagerDashboard = () => {
@@ -185,27 +187,11 @@ const ManagerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="customers">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản lý Khách hàng</CardTitle>
-                <CardDescription>Quản lý thông tin và lịch sử khách hàng</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Chức năng quản lý khách hàng đang được phát triển...</p>
-              </CardContent>
-            </Card>
+            <CustomerManagement />
           </TabsContent>
 
           <TabsContent value="appointments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Lịch làm việc</CardTitle>
-                <CardDescription>Quản lý lịch hẹn và phân công công việc</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Chức năng quản lý lịch làm việc đang được phát triển...</p>
-              </CardContent>
-            </Card>
+            <ScheduleManagement />
           </TabsContent>
         </Tabs>
       </div>
