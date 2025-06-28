@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import NotificationBell from "@/components/NotificationBell";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -76,11 +77,14 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-secondary/10">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Dashboard Khách hàng</h1>
-          <p className="text-muted-foreground">
-            Quản lý thông tin cá nhân và lịch hẹn của bạn
-          </p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Dashboard Khách hàng</h1>
+            <p className="text-muted-foreground">
+              Quản lý thông tin cá nhân và lịch hẹn của bạn
+            </p>
+          </div>
+          <NotificationBell />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -106,7 +110,11 @@ const UserDashboard = () => {
                 <p className="text-sm text-muted-foreground">Khách hàng từ</p>
                 <p className="font-medium">15/01/2024</p>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/update-profile')}
+              >
                 Cập nhật thông tin
               </Button>
             </CardContent>
@@ -124,14 +132,33 @@ const UserDashboard = () => {
               >
                 Đặt lịch hẹn mới
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/dashboard/user')}
+              >
                 Xem kết quả xét nghiệm
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/treatment-history')}
+              >
                 Lịch sử điều trị
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/online-consultation')}
+              >
                 Tư vấn trực tuyến
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/payment')}
+              >
+                Thanh toán dịch vụ
               </Button>
             </CardContent>
           </Card>

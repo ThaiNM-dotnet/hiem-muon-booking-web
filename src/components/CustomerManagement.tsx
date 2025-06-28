@@ -1,13 +1,24 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const CustomerManagement = () => {
+  const { toast } = useToast();
+  
   const [customers, setCustomers] = useState([
     {
       id: 1,
@@ -42,6 +53,8 @@ const CustomerManagement = () => {
   ]);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingCustomer, setEditingCustomer] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -61,6 +74,27 @@ const CustomerManagement = () => {
     if (confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) {
       setCustomers(customers.filter(customer => customer.id !== id));
     }
+  };
+
+  const handleEdit = (customer: any) => {
+    setEditingCustomer({ ...customer });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingCustomer) return;
+    
+    setCustomers(customers.map(customer =>
+      customer.id === editingCustomer.id ? editingCustomer : customer
+    ));
+    
+    toast({
+      title: "Cập nhật thành công!",
+      description: "Thông tin khách hàng đã được cập nhật."
+    });
+    
+    setIsEditDialogOpen(false);
+    setEditingCustomer(null);
   };
 
   const getStatusBadge = (status: string) => {
@@ -119,7 +153,11 @@ const CustomerManagement = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEdit(customer)}
+                      >
                         <PencilIcon className="w-4 h-4" />
                       </Button>
                       <Button 
@@ -136,6 +174,71 @@ const CustomerManagement = () => {
             </TableBody>
           </Table>
         </div>
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Chỉnh sửa thông tin khách hàng</DialogTitle>
+              <DialogDescription>
+                Cập nhật thông tin khách hàng trong hệ thống
+              </DialogDescription>
+            </DialogHeader>
+            {editingCustomer && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="edit-name">Họ và tên</Label>
+                  <Input
+                    id="edit-name"
+                    value={editingCustomer.name}
+                    onChange={(e) => setEditingCustomer({...editingCustomer, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-email">Email</Label>
+                  <Input
+                    id="edit-email"
+                    value={editingCustomer.email}
+                    onChange={(e) => setEditingCustomer({...editingCustomer, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-phone">Số điện thoại</Label>
+                  <Input
+                    id="edit-phone"
+                    value={editingCustomer.phone}
+                    onChange={(e) => setEditingCustomer({...editingCustomer, phone: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-age">Tuổi</Label>
+                  <Input
+                    id="edit-age"
+                    type="number"
+                    value={editingCustomer.age}
+                    onChange={(e) => setEditingCustomer({...editingCustomer, age: parseInt(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-address">Địa chỉ</Label>
+                  <Input
+                    id="edit-address"
+                    value={editingCustomer.address}
+                    onChange={(e) => setEditingCustomer({...editingCustomer, address: e.target.value})}
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                    Hủy
+                  </Button>
+                  <Button onClick={handleSaveEdit}>
+                    Lưu thay đổi
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
