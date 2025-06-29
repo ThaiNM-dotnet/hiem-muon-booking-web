@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ManagerDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userLocal = JSON.parse(localStorage.getItem('user') || '{}');
+    setUser(userLocal && userLocal.name ? userLocal : null);
+  }, []);
 
   const stats = [
     {
@@ -80,11 +85,19 @@ const ManagerDashboard = () => {
   return (
     <div className="min-h-screen bg-secondary/10">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Bảng điều khiển quản lý</h1>
-          <p className="text-muted-foreground">
-            Quản lý tổng thể khách hàng và lịch làm việc của hệ thống
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Bảng điều khiển quản lý</h1>
+            <p className="text-muted-foreground">
+              Quản lý tổng thể khách hàng và lịch làm việc của hệ thống
+            </p>
+          </div>
+          {user && (
+            <div className="flex items-center space-x-2">
+              <span className="font-semibold">{user.name}</span>
+              <span className="text-muted-foreground text-sm">({user.email})</span>
+            </div>
+          )}
         </div>
 
         {/* Stats Cards */}

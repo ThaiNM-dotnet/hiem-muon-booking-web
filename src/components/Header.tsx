@@ -1,27 +1,30 @@
-
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { getUserById } from "@/api/userService";
 
-interface HeaderProps {
-  user?: {
-    name: string;
-    role: 'user' | 'staff' | 'manager';
-  };
-  onLogout?: () => void;
-}
-
-const Header = ({ user, onLogout }: HeaderProps) => {
+const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const [user, setUser] = useState<{ name: string; email: string; role?: string } | null>(null);
+
+  useEffect(() => {
+    const userLocal = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!userLocal.id) {
+      setUser(null);
+      return;
+    }
+    getUserById(userLocal.id).then(res => setUser(res.data));
+  }, [location]);
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    setUser(null);
     toast({
       title: "Tạm biệt!",
       description: "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hẹn gặp lại!",
@@ -76,44 +79,27 @@ const Header = ({ user, onLogout }: HeaderProps) => {
 
           <div className="flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center space-x-4">
+              <>
                 <Button
                   variant="ghost"
-                  onClick={() => {
-                    if (user.role === 'manager') {
-                      navigate('/dashboard/manager');
-                    } else if (user.role === 'staff') {
-                      navigate('/dashboard/staff');
-                    } else {
-                      navigate('/dashboard/user');
-                    }
-                  }}
-                  className="text-sm"
+                  onClick={() => navigate('/update-profile')}
+                  className="text-sm flex items-center space-x-2"
                 >
-                  Dashboard
+                  <span className="font-semibold">{user.name}</span>
                 </Button>
-                <span className="text-sm text-muted-foreground">Xin chào, {user.name}</span>
                 <Button variant="outline" onClick={handleLogout} size="sm">
                   Đăng xuất
                 </Button>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/login')}
-                  size="sm"
-                >
+              <>
+                <Button variant="outline" onClick={() => navigate('/login')} size="sm">
                   Đăng nhập
                 </Button>
-                <Button
-                  onClick={() => navigate('/register')}
-                  size="sm"
-                  className="bg-primary hover:bg-primary/90"
-                >
+                <Button onClick={() => navigate('/register')} size="sm" className="bg-primary hover:bg-primary/90">
                   Đăng ký ngay
                 </Button>
-              </div>
+              </>
             )}
           </div>
         </div>

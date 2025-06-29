@@ -1,18 +1,21 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import { getUserById } from "@/api/userService";
 
 const CustomerPage = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userLocal = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!userLocal.id) return;
+    getUserById(userLocal.id).then(res => setUser(res.data));
+  }, []);
 
   // Mock user data - in real app this would come from auth context
-  const user = {
-    name: "Nguyễn Thị Mai",
-    membershipLevel: "VIP"
-  };
-
   const services = [
     {
       icon: "♡",
@@ -100,11 +103,11 @@ const CustomerPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Chào mừng trở lại, <span className="text-primary">{user.name}</span>!
+              Chào mừng trở lại, <span className="text-primary">{user?.name || "Khách hàng"}</span>!
             </h1>
             <div className="flex items-center justify-center space-x-2 mb-6">
               <Badge className="bg-primary text-primary-foreground px-3 py-1">
-                Thành viên {user.membershipLevel}
+                Thành viên {user?.membershipLevel}
               </Badge>
             </div>
             <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">

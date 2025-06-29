@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -45,10 +44,10 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Header user={user} onLogout={handleLogout} />
+          <Header />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/booking" element={<Booking />} />
             <Route path="/services" element={<Services />} />

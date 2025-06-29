@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,40 +15,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { getAllSchedules, createSchedule, updateSchedule, deleteSchedule } from "@/api/scheduleService";
 
 const ScheduleManagement = () => {
   const { toast } = useToast();
   
-  const [schedules, setSchedules] = useState([
-    {
-      id: 1,
-      doctor: "BS. Nguyễn Văn An",
-      date: "15/6/2024",
-      time: "08:00 - 12:00",
-      patients: "3/10",
-      status: "available"
-    },
-    {
-      id: 2,
-      doctor: "BS. Trần Thị Bình",
-      date: "15/6/2024",
-      time: "13:00 - 17:00",
-      patients: "5/8",
-      status: "available"
-    },
-    {
-      id: 3,
-      doctor: "BS. Lê Minh Cường",
-      date: "16/6/2024",
-      time: "08:00 - 12:00",
-      patients: "0/10",
-      status: "unavailable"
-    }
-  ]);
+  const [schedules, setSchedules] = useState<any[]>([]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [editingSchedule, setEditingSchedule] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  useEffect(() => {
+    getAllSchedules().then(res => setSchedules(res.data));
+  }, []);
 
   const filteredSchedules = schedules.filter(schedule =>
     schedule.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,9 +43,10 @@ const ScheduleManagement = () => {
     ));
   };
 
-  const deleteSchedule = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm("Bạn có chắc chắn muốn xóa lịch làm việc này?")) {
-      setSchedules(schedules.filter(schedule => schedule.id !== id));
+      await deleteSchedule(id);
+      setSchedules(schedules.filter(s => s.id !== id));
     }
   };
 
@@ -74,12 +55,10 @@ const ScheduleManagement = () => {
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingSchedule) return;
-    
-    setSchedules(schedules.map(schedule =>
-      schedule.id === editingSchedule.id ? editingSchedule : schedule
-    ));
+    await updateSchedule(editingSchedule.id, editingSchedule);
+    setSchedules(schedules.map(s => s.id === editingSchedule.id ? editingSchedule : s));
     
     toast({
       title: "Cập nhật thành công!",
@@ -152,7 +131,7 @@ const ScheduleManagement = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => deleteSchedule(schedule.id)}
+                        onClick={() => handleDelete(schedule.id)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>

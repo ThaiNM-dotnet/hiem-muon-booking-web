@@ -1,24 +1,30 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { getUserById, updateUser } from "@/api/userService";
 
 const UpdateProfile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    name: "Nguyễn Thị Lan",
-    email: "lan.nguyen@email.com",
-    phone: "0901234567",
-    address: "123 Đường ABC, Quận 1, TP.HCM",
-    dateOfBirth: "1990-05-15",
-    emergencyContact: "0912345678"
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    dateOfBirth: "",
+    emergencyContact: ""
   });
+
+  useEffect(() => {
+    const userLocal = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!userLocal.id) return;
+    getUserById(userLocal.id).then(res => setFormData(res.data));
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -27,13 +33,22 @@ const UpdateProfile = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Cập nhật thành công!",
-      description: "Thông tin cá nhân đã được cập nhật."
-    });
-    navigate('/dashboard/user');
+    try {
+      await updateUser(formData);
+      toast({
+        title: "Cập nhật thành công!",
+        description: "Thông tin cá nhân đã được cập nhật."
+      });
+      localStorage.setItem('user', JSON.stringify(formData));
+      navigate('/dashboard/user');
+    } catch (err) {
+      toast({
+        title: "Cập nhật thất bại!",
+        description: "Vui lòng thử lại."
+      });
+    }
   };
 
   return (
@@ -113,7 +128,7 @@ const UpdateProfile = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="emergencyContact">Số điện thoại người thân (khẩn cấp)</Label>
+                <Label htmlFor="emergencyContact">Số điện thoại</Label>
                 <Input
                   id="emergencyContact"
                   type="tel"
